@@ -1,0 +1,15 @@
+# Node-modules
+node_modules/
+
+# Byg output
+dist/
+
+# Lås-filer
+package-lock.json
+
+# Miljøvariabler
+.env
+
+# Editor- og OS-filer
+.vscode/
+.DS_Store
