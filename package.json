@@ -1,5 +1,5 @@
 {
-    "name": "@your-org/api-core",
+    "name": "@missjessen/mdb-rest-api-core",
     "version": "0.1.0",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
