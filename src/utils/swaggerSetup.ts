@@ -1,23 +1,22 @@
+// @missjessen/mdb-rest-api-core/src/util/swaggerConfig.ts
+
 import { Express } from 'express';
-import swaggerJsdoc from 'swagger-jsdoc';
+// Importér SwaggerDefinition, så TypeScript ved, at baseDef indeholder alle obligatoriske felter
+import swaggerJsdoc, { SwaggerDefinition } from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
 export interface SwaggerOptions {
-  baseUrl: string;                   // Hoved-server URL
-  devToken?: string;                 // JWT til “Authorize” i dev
-  extraDefinition?: Record<string, any>; // Overrides: info, servers, components…
-  extraApis?: string[];              // Glob-patterns for egne .ts filer
+  baseUrl: string;
+  devToken?: string;
+  extraDefinition?: Record<string, any>;
+  extraApis?: string[];
 }
 
-/**
- * Sætter Swagger UI op under /docs.
- * - Bruger base-definition fra pakken
- * - Merger optional ekstra definition (f.eks. custom schemas og servers)
- * - Scanner både pakken og projektets egne filer
- */
 export function swaggerSetup(app: Express, opts: SwaggerOptions) {
-  // Standard-definition
-  const baseDef = {
+  // ——————————————————————————————————————————————————————————————————————
+  // 1) Definér baseDef som en ægte SwaggerDefinition
+  // ——————————————————————————————————————————————————————————————————————
+  const baseDef: SwaggerDefinition = {
     openapi: '3.0.1',
     info: {
       title: 'API',
@@ -26,26 +25,35 @@ export function swaggerSetup(app: Express, opts: SwaggerOptions) {
     servers: [{ url: opts.baseUrl }],
     components: {
       securitySchemes: {
-        bearerAuth: { type: 'http', scheme: 'bearer' },
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
       },
     },
     security: [{ bearerAuth: [] }],
-    // Merge ekstra definition hvis givet
+
+    // ————————————————————————————————————————————————————————————————————
+    // 2) Merge ekstra felter fra service-projektets extraDefinition
+    // ————————————————————————————————————————————————————————————————————
     ...(opts.extraDefinition || {}),
   };
 
-  // Byg spec’en
+  // ——————————————————————————————————————————————————————————————————————
+  // 3) Byg swaggerJsdoc-spec’en ved at kombinere baseDef med alle filer
+  // ——————————————————————————————————————————————————————————————————————
   const swaggerSpec = swaggerJsdoc({
     definition: baseDef,
     apis: [
-      // Alt i pakken
-      '**/*.ts',
-      // + evt. ekstra mønstre fra projektet
-      ...(opts.extraApis ?? []),
+      '**/*.ts',                
+      ...(opts.extraApis ?? []), 
     ],
   });
 
-  // UI-indstillinger for devToken
+  // ——————————————————————————————————————————————————————————————————————
+  // 4) Hvis der er angivet et devToken, pre-fyldes Authorize-feltet i UI
+  // ——————————————————————————————————————————————————————————————————————
   const swaggerUiOpts = opts.devToken
     ? {
         swaggerOptions: {
@@ -61,5 +69,8 @@ export function swaggerSetup(app: Express, opts: SwaggerOptions) {
       }
     : {};
 
+  // ——————————————————————————————————————————————————————————————————————
+  // 5) Hook Swagger UI på /docs
+  // ——————————————————————————————————————————————————————————————————————
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOpts));
 }
