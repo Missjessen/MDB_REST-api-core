@@ -5,8 +5,8 @@ on:
       - main
 
 permissions:
-  contents: write    # tillad at semantic-release kan pushe tags/commits
-  packages: write    # tillad at semantic-release kan publicere til npm
+  contents: write    
+  packages: write   
 
 jobs:
   release:
@@ -26,6 +26,6 @@ jobs:
 
       - name: ✨ Kør semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # GitHub Actions sørger selv for at sætte denne
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # GitHub Actions 
           NPM_TOKEN:    ${{ secrets.NPM_TOKEN }}      # Bruges til at publicere til npm
         run: npx semantic-release

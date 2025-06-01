@@ -30,7 +30,7 @@ export function swaggerSetup(app: Express, opts: SwaggerOptions) {
           bearerFormat: 'JWT',
         },
       },
-      // Start med et tomt schemas-objekt – vi fylder det fra extraDefinition senere
+     
       schemas: {},
     },
     security: [{ bearerAuth: [] }],
@@ -56,11 +56,11 @@ export function swaggerSetup(app: Express, opts: SwaggerOptions) {
   //    Bemærk at alle andre felter (info, servers, tags osv.) også kan overskrives
   // ——————————————————————————————————————————————————————————————————————
   const mergedDef: SwaggerDefinition = {
-    // Start fra baseDef (openapi, info, servers, security, components/securitySchemes, components/schemas = {})
+    
     ...baseDef,
-    // Flet info, servers, tags, osv. fra extraDef (overskriver baseDef.info, baseDef.servers, hvis ekstra givet)
+    
     ...extraDef,
-    // MEN: Erstat “components” med vores dybt flettede komponenter
+    
     components: mergedComponents,
   };
 
@@ -70,9 +70,9 @@ export function swaggerSetup(app: Express, opts: SwaggerOptions) {
   const swaggerSpec = swaggerJsdoc({
     definition: mergedDef,
     apis: [
-      // Alle .ts-filer i core-pakken (typisk i src/ eller dist/, afhængigt af dev vs. prod)
+      
       '**/*.ts',
-      // Evt. ekstra mønstre fra service-projektet
+      
       ...(opts.extraApis ?? []),
     ],
   });
