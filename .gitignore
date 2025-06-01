@@ -4,8 +4,7 @@ node_modules/
 # Byg output
 dist/
 
-# Lås-filer
-package-lock.json
+
 
 # Miljøvariabler
 .env
