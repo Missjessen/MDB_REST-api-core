@@ -15,42 +15,34 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
-
-    # Du kan også have permissions her i job‐blokken; redundant med globalt.
     permissions:
       contents: write
       packages: write
 
     steps:
-      # 1) Hent koden inkl. hele Git-historikken (krævet for semantic-release)
       - name: 📂 Checkout code (inkl. tags)
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      # 2) Opsæt Node 18.x
       - name: 🛠️ Setup Node.js 18.x
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
-          registry-url: 'https://registry.npmjs.org'  # Viktig hvis du udgiver til npmjs.org
+          registry-url: https://registry.npmjs.org
 
-      # 3) Opret .npmrc for CI, så npm-publish kan bruge NPM_TOKEN
       - name: 📝 Configure npm auth
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
-      # 4) Installer dependencies (inkl. semantic-release i devDependencies)
       - name: 📦 Install dependencies
         run: npm ci
 
-      # 5) Byg projektet (hvis du har en build-step; ellers kan du fjerne)
       - name: 🏗️ Build project
         run: npm run build
 
-      # 6) Kør semantic-release
       - name: 🚀 Release via semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Automatisk fra GitHub Actions
-          NPM_TOKEN:    ${{ secrets.NPM_TOKEN }}     # Dit npm-token som secret
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN:    ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
