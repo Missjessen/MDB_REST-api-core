@@ -1,10 +1,10 @@
 {
     "name": "@missjessen/mdb-rest-api-core",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "description": "MDB REST-API core utilities (versioning, auth, swagger osv.)",
     "publishConfig": {
-      "access": "public"
-        },
+        "access": "public"
+    },
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
