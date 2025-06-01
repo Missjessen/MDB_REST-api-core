@@ -100,3 +100,4 @@ export function swaggerSetup(app: Express, opts: SwaggerOptions) {
   // ——————————————————————————————————————————————————————————————————————
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOpts));
 }
+
