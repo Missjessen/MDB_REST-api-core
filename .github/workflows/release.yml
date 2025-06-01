@@ -1,56 +1,31 @@
 name: Release (semantic-release)
-
-# Kun trigger ved push til main
 on:
   push:
     branches:
       - main
 
-# Globale permissions:
 permissions:
-  contents: write   # For at oprette tags/GitHub Releases
-  packages: write   # Hvis du udgiver til GitHub Packages eller npmjs.org
-  issues: write     # Hvis du poster kommentarer/issues via @semantic-release/github
+  contents: write    # tillad at semantic-release kan pushe tags/commits
+  packages: write    # tillad at semantic-release kan publicere til npm
 
 jobs:
   release:
     runs-on: ubuntu-latest
-
-    # Gentag permissions i job‐blokken (valgfrit)
-    permissions:
-      contents: write
-      packages: write
-
     steps:
-      # 1) Checkout med hele historikken (inkl. tags)
-      - name: 📂 Checkout code (inkl. tags)
+      - name: 📂 Checkout kode
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
-      # 2) Setup Node.js
-      - name: 🛠️ Setup Node.js 18.x
+      - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
-          registry-url: 'https://registry.npmjs.org'  # Nødvendigt for npm-publish
+          node-version: "20.x"
+          cache: npm
 
-      # 3) Opret .npmrc med NPM_TOKEN for npm-publish
-      - name: 📝 Configure npm auth
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-
-      # 4) Installer dependencies
       - name: 📦 Install dependencies
         run: npm ci
 
-      # 5) (Valgfrit) Byg projekt, hvis du har en build‐kommando
-      - name: 🏗️ Build project
-        run: npm run build
-
-      # 6) Kør semantic-release
-      - name: 🚀 Release via semantic-release
+      - name: ✨ Kør semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN:    ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release --no-ci
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # GitHub Actions sørger selv for at sætte denne
+          NPM_TOKEN:    ${{ secrets.NPM_TOKEN }}      # Bruges til at publicere til npm
+        run: npx semantic-release
