@@ -51,6 +51,6 @@ jobs:
       # 6) Kør semantic-release
       - name: 🚀 Release via semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN:    ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release --no-ci

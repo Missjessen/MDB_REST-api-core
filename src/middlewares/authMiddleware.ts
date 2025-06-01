@@ -14,6 +14,7 @@ export function authMiddleware(): RequestHandler {
       res.status(401).json({ error: 'Missing Bearer token' });
       return;
     }
+    
 
     const token = authHeader.substring(7);
     try {
