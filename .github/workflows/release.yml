@@ -1,48 +1,56 @@
 name: Release (semantic-release)
 
-# Trigger kun på push til main
+# Kun trigger ved push til main
 on:
   push:
     branches:
       - main
 
-# Globale permissions for workflowet (gælder kun, hvis du ikke vil override i job)
+# Globale permissions:
 permissions:
-  contents: write    # Tillad at oprette tags/releases i repo
-  packages: write    # Tillad at publicere til npm (eller GitHub Packages)
-  issues: write      # (Kun hvis du ønsker, at @semantic-release/github skriver kommentarer eller issues)
+  contents: write   # For at oprette tags/GitHub Releases
+  packages: write   # Hvis du udgiver til GitHub Packages eller npmjs.org
+  issues: write     # Hvis du poster kommentarer/issues via @semantic-release/github
 
 jobs:
   release:
     runs-on: ubuntu-latest
+
+    # Gentag permissions i job‐blokken (valgfrit)
     permissions:
       contents: write
       packages: write
 
     steps:
+      # 1) Checkout med hele historikken (inkl. tags)
       - name: 📂 Checkout code (inkl. tags)
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
+      # 2) Setup Node.js
       - name: 🛠️ Setup Node.js 18.x
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
-          registry-url: https://registry.npmjs.org
+          registry-url: 'https://registry.npmjs.org'  # Nødvendigt for npm-publish
 
+      # 3) Opret .npmrc med NPM_TOKEN for npm-publish
       - name: 📝 Configure npm auth
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
+      # 4) Installer dependencies
       - name: 📦 Install dependencies
         run: npm ci
 
+      # 5) (Valgfrit) Byg projekt, hvis du har en build‐kommando
       - name: 🏗️ Build project
         run: npm run build
 
+      # 6) Kør semantic-release
       - name: 🚀 Release via semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN:    ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release
+        run: npx semantic-release --no-ci
