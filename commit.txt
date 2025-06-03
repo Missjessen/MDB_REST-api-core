@@ -1,0 +1,5 @@
+git commit -m "feat: tilføj JWT-middleware med tenantId-scope"
+
+git commit -m "fix: ret 404-fejl når sheetId ikke findes"
+
+git push origin main
